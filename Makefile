@@ -2,15 +2,12 @@
 all: build doc
 
 NAME=dns
-OFLAGS=-annot
 J=4
 
 export OCAMLRUNPARAM=b
 
 setup.bin: setup.ml
-	ocamlopt.opt $(OFLAGS) -o $@ $< 	\
-	  || ocamlopt $(OFLAGS) -o $@ $< 	\
-	  || ocamlc $(OFLAGS) -o $@ $<
+	ocamlopt.opt -o $@ $< || ocamlopt -o $@ $< || ocamlc -o $@ $<
 	$(RM) setup.cmx setup.cmi setup.o setup.cmo
 
 setup.data: setup.bin
