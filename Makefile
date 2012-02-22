@@ -1,22 +1,26 @@
 .PHONY: all clean install build
-all: build test doc
+all: build doc
 
 NAME=dns
+OFLAGS=-annot
+J=4
 
 export OCAMLRUNPARAM=b
 
 setup.bin: setup.ml
-	ocamlopt.opt -o $@ $< || ocamlopt -o $@ $< || ocamlc -o $@ $<
+	ocamlopt.opt $(OFLAGS) -o $@ $< 	\
+	  || ocamlopt $(OFLAGS) -o $@ $< 	\
+	  || ocamlc $(OFLAGS) -o $@ $<
 	$(RM) setup.cmx setup.cmi setup.o setup.cmo
 
 setup.data: setup.bin
 	./setup.bin -configure
 
 build: setup.data setup.bin
-	./setup.bin -build
+	./setup.bin -build -j $(J)
 
 doc: setup.data setup.bin
-	./setup.bin -doc
+	./setup.bin -doc -j $(J)
 
 install: setup.bin
 	./setup.bin -install
