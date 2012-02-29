@@ -21,9 +21,10 @@ module DL = Dns.Loader
 module DQ = Dns.Query
 module DR = Dns.RR
 module DP = Dns.Packet
+module DT = Dns.Types
 
 type dnsfn = src:Lwt_unix.sockaddr -> dst:Lwt_unix.sockaddr ->
-  Dns.Packet.dns -> Dns.Query.query_answer option Lwt.t
+  Dns.Types.dns -> Dns.Query.query_answer option Lwt.t
 
 let bind_fd ~address ~port =
   lwt src = try_lwt
@@ -55,10 +56,10 @@ let listen ~fd ~src ~(dnsfn:dnsfn) =
           match answer with
           |None -> return ()
           |Some answer ->
-            let detail = DP.(build_detail { qr=`Answer; opcode=`Query; aa=answer.DQ.aa;
-              tc=false; rd=false; ra=false; rcode=answer.DQ.rcode }) in
-            let response = DP.({ id=query.id; detail; questions=query.questions; answers=answer.DQ.answer;
-              authorities=answer.DQ.authority; additionals=answer.DQ.additional }) in
+            let detail = DP.(DT.(build_detail { qr=`Answer; opcode=`Query; aa=answer.DQ.aa;
+              tc=false; rd=false; ra=false; rcode=answer.DQ.rcode })) in
+            let response = DP.(DT.({ id=query.id; detail; questions=query.questions; answers=answer.DQ.answer;
+              authorities=answer.DQ.authority; additionals=answer.DQ.additional })) in
             let buf, boff, blen = DP.marshal response in
             (* TODO transmit queue, rather than ignoring result here *)
             let _ = Lwt_unix.sendto fd buf (boff/8) (blen/8) [] dst in
@@ -88,10 +89,11 @@ let listen_with_zonebuf ~address ~port ~zonebuf ~mode =
     match mode with
     |`none ->
       (fun ~src ~dst d ->
-         let open DP in
-         let q = List.hd d.questions in
-         let r = get_answer q.q_name q.q_type d.id in
-         return (Some r)
+        DT.(let open DP in
+                let q = List.hd d.questions in
+                let r = get_answer q.q_name q.q_type d.id in
+                return (Some r)
+        )
       )
   in
   listen ~fd ~src ~dnsfn

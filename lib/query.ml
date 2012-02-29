@@ -20,6 +20,7 @@
 open RR
 open Trie
 open Operators
+open Types
 
 module DP = Packet
 module H = Hashcons
@@ -27,11 +28,11 @@ module H = Hashcons
 (* We answer a query with RCODE, AA, ANSWERS, AUTHORITY and ADDITIONAL *)
 
 type query_answer = {
-  rcode : DP.rcode;
+  rcode : rcode;
   aa: bool;
-  answer: DP.rsrc_record list;
-  authority: DP.rsrc_record list;
-  additional: DP.rsrc_record list;
+  answer: rsrc_record list;
+  authority: rsrc_record list;
+  additional: rsrc_record list;
 } 
 
 let answer_query qname qtype trie = 
@@ -121,7 +122,7 @@ let answer_query qname qtype trie =
           
       | WKS l -> 
 	    List.iter (fun (address, protocol, bitmap) -> 
-	      addrr (`WKS (address, DP.byte protocol, bitmap.H.node))) l
+	      addrr (`WKS (address, byte protocol, bitmap.H.node))) l
 
       | PTR l -> 
 	    List.iter (fun d -> 

@@ -17,6 +17,8 @@
 module DT = Trie
 module DL = Loader
 open Operators
+open Types
+open Uri_IP
 
 module Bitstring = struct
   include Bitstring
@@ -28,37 +30,11 @@ let sp = Printf.sprintf
 let pr = Printf.printf
 let ep = Printf.eprintf
 
-exception Unparsable of string * Bitstring.bitstring
-
 let join c l = String.concat c l
 let stop (x, bits) = x (* drop remainder to stop parsing and demuxing *) 
 
-type domain_name = string list
-type int16 = int
-type ipv4 = int32
-let ipv4_to_string i =   
-  sp "%ld.%ld.%ld.%ld" 
-    ((i &&& 0x0_ff000000_l) >>> 24) ((i &&& 0x0_00ff0000_l) >>> 16)
-    ((i &&& 0x0_0000ff00_l) >>>  8) ((i &&& 0x0_000000ff_l)       )
+exception Unparsable of string * Bitstring.bitstring
 
-type byte = char
-let byte (i:int) : byte = Char.chr i
-let int_of_byte b = int_of_char b
-let int32_of_byte b = b |> int_of_char |> Int32.of_int
-let int32_of_int (i:int) = Int32.of_int i
-
-type bytes = string
-let bytes_to_hex_string bs = 
-  bs |> Array.map (fun b -> sp "%02x." (int_of_byte b))
-let bytes_of_bitstring bits = Bitstring.string_of_bitstring bits
-let ipv4_addr_of_bytes bs = 
-  ((bs.[0] |> int32_of_byte <<< 24) ||| (bs.[1] |> int32_of_byte <<< 16) 
-    ||| (bs.[2] |> int32_of_byte <<< 8) ||| (bs.[3] |> int32_of_byte))
-
-type label = 
-  | L of string * int (* string *)
-  | P of int * int (* pointer *)
-  | Z of int (* zero; terminator *)
 
 let parse_charstr bits = 
   bitmatch bits with
@@ -109,16 +85,6 @@ let parse_name names base bits =
   in 
   let name, bits = aux [] [] bits in
   (List.rev name, bits)
-
-type rr_type = [
-| `A | `NS | `MD | `MF | `CNAME | `SOA | `MB | `MG | `MR | `NULL 
-| `WKS | `PTR | `HINFO | `MINFO | `MX | `TXT | `RP | `AFSDB | `X25 
-| `ISDN | `RT | `NSAP | `NSAP_PTR | `SIG | `KEY | `PX | `GPOS | `AAAA 
-| `LOC | `NXT | `EID | `NIMLOC | `SRV | `ATMA | `NAPTR | `KM | `CERT 
-| `A6 | `DNAME | `SINK | `OPT | `APL | `DS | `SSHFP | `IPSECKEY 
-| `RRSIG | `NSEC | `DNSKEY | `SPF | `UINFO | `UID | `GID | `UNSPEC
-| `Unknown of int * bytes
-]
 
 let int_of_rr_type : rr_type -> int = function
   | `A        -> 1
@@ -290,44 +256,16 @@ and string_of_rr_type:rr_type -> string = function
   | `UNSPEC   -> "UNSPEC"
   | `Unknown (i, _) -> Printf.sprintf "Unknown (%d)" i
 
-type rr_rdata = [
-| `A of int32
-| `NS of domain_name
-| `MD of domain_name
-| `MF of domain_name
-| `CNAME of domain_name
-| `SOA of 
-    domain_name * domain_name * int32 * int32 * int32 * int32 * int32 
-| `HINFO of string * string
-| `MB of domain_name
-| `MG of domain_name
-| `MR of domain_name
-| `MINFO of domain_name * domain_name
-| `MX of int16 * domain_name
-| `PTR of domain_name
-| `TXT of string list
-| `WKS of int32 * byte * string
-| `RP of domain_name * domain_name
-| `AFSDB of int16 * domain_name
-| `X25 of string
-| `ISDN of string
-| `RT of int16 * domain_name
-| `AAAA of bytes
-| `SRV of int16 * int16 * int16 * domain_name
-| `UNSPEC of bytes
-| `UNKNOWN of int * bytes
-]
-
 let string_of_rdata r = 
   match r with
-    | `A ip -> sp "A (%s)" (ipv4_to_string ip)
+    | `A ip -> sp "A (%s)" (string_of_ipv4 ip)
     | `NS n -> sp "NS (%s)" (join "." n)
     | _     -> failwith "string_of_rdata: unknown rdata type"
 
 let parse_rdata names base t bits = 
   RR.(
     match t with
-      | `A -> `A (bits |> bytes_of_bitstring |> ipv4_addr_of_bytes)
+      | `A -> `A (bits |> bytes_of_bitstring |> ipv4_of_bytes)
       | `NS -> `NS (bits |> parse_name names base |> stop)
       | `CNAME -> `CNAME (bits |> parse_name names base |> stop)
         
@@ -367,7 +305,6 @@ let parse_rdata names base t bits =
       | t -> `UNKNOWN (int_of_rr_type t, Bitstring.string_of_bitstring bits)
   )
 
-type rr_class = [ `IN | `CS | `CH | `HS ]
 let int_of_rr_class : rr_class -> int = function
   | `IN -> 1
   | `CS -> 2
@@ -384,13 +321,6 @@ and string_of_rr_class : rr_class -> string = function
   | `CS -> "CS"
   | `CH -> "CH"
   | `HS -> "HS"
-
-type rsrc_record = {
-  rr_name  : domain_name;
-  rr_class : rr_class;
-  rr_ttl   : int32;
-  rr_rdata : rr_rdata;
-}
 
 let rr_to_string rr = 
   sp "%s <%s|%ld> %s" 
@@ -411,7 +341,6 @@ let parse_rr names base bits =
          }, data
     | { _ } -> raise (Unparsable ("parse_rr", bits))
 
-type q_type = [ rr_type | `AXFR | `MAILB | `MAILA | `ANY | `TA | `DLV ]
 let int_of_q_type : q_type -> int = function
   | `AXFR         -> 252
   | `MAILB        -> 253
@@ -437,8 +366,6 @@ and string_of_q_type:q_type -> string = function
   | `DLV          -> "DLV"
   | #rr_type as t -> string_of_rr_type t
 
-type q_class = [ rr_class | `NONE | `ANY ]
-
 let int_of_q_class : q_class -> int = function
   | `NONE          -> 254
   | `ANY           -> 255
@@ -451,12 +378,6 @@ and string_of_q_class : q_class -> string = function
   | `NONE          -> "NONE"
   | `ANY           -> "ANY"
   | #rr_class as c -> string_of_rr_class c
-
-type question = {
-  q_name  : domain_name;
-  q_type  : q_type;
-  q_class : q_class;
-}
 
 let question_to_string q = 
   sp "%s <%s|%s>" 
@@ -473,7 +394,6 @@ let parse_question names base bits =
          }, data
     | { _ } -> raise (Unparsable ("parse_question", bits))
 
-type qr = [ `Query | `Answer ]
 let qr_of_bool = function
   | false -> `Query
   | true  -> `Answer
@@ -481,7 +401,6 @@ let bool_of_qr = function
   | `Query  -> false
   | `Answer -> true
 
-type opcode = [ qr | `Status | `Reserved | `Notify | `Update ]
 let opcode_of_int = function
   | 0 -> `Query
   | 1 -> `Answer
@@ -499,13 +418,6 @@ let int_of_opcode = function
   | `Update -> 5
   | _ -> failwith "dnspacket: unknown opcode"
 
-type rcode = [
-| `NoError  | `FormErr
-| `ServFail | `NXDomain | `NotImp  | `Refused
-| `YXDomain | `YXRRSet  | `NXRRSet | `NotAuth
-| `NotZone  | `BadVers  | `BadKey  | `BadTime
-| `BadMode  | `BadName  | `BadAlg 
-]
 let rcode_of_int = function
   | 0 -> `NoError
   | 1 -> `FormErr
@@ -567,15 +479,6 @@ and string_of_rcode = function
   | `BadAlg -> "BadAlg"
   | _ -> failwith "dnspacket: unknown rcode"
 
-type detail = {
-  qr: qr;
-  opcode: opcode;
-  aa: bool; 
-  tc: bool; 
-  rd: bool; 
-  ra: bool;
-  rcode: rcode;
-}
 let detail_to_string d = 
   sp "%c:%02x %s:%s:%s:%s %d"
     (match d.qr with `Query -> 'Q' | `Answer -> 'R')
@@ -599,15 +502,6 @@ let build_detail d =
     d.aa:1; d.tc:1; d.rd:1; d.ra:1; (* z *) 0:3;
     (int_of_rcode d.rcode):4
   })
-
-type dns = {
-  id          : int16;
-  detail      : Bitstring.t;
-  questions   : question list;
-  answers     : rsrc_record list;
-  authorities : rsrc_record list;
-  additionals : rsrc_record list;
-}
 
 let dns_to_string d = 
   sp "%04x %s <qs:%s> <an:%s> <au:%s> <ad:%s>"
@@ -657,7 +551,7 @@ let marshal dns =
   in
 
   let pointer off = 
-    let ptr = (0b11_l <<< 14) +++ (int32_of_int off) in
+    let ptr = (0b11_l <<< 14) +++ (Int32.of_int off) in
     let hi = ((ptr &&& 0xff00_l) >>> 8) |> Int32.to_int |> byte in
     let lo =  (ptr &&& 0x00ff_l)        |> Int32.to_int |> byte in
     sp "%c%c" hi lo

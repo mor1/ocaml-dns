@@ -18,6 +18,7 @@
  *)
 
 open RR
+open Types
 
 (* 
    Non-standard behaviour: 

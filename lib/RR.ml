@@ -16,6 +16,8 @@
  * dnsrr.ml --- datatypes and handling for DNS RRs and RRSets
  *
  *)
+
+open Types
   
 (* Hash-consing: character strings *)
 module CSH = Hashcons.Make (struct 
@@ -52,47 +54,6 @@ let clear_cons_tables () =
   dn_hash := DNH.create 1;
   cstr_hash := CSH.create 1
 
-(* Mnemonicity! *)
-type serial = int32
-and ipv4 = int32
-and cstr = string Hashcons.hash_consed
-
-(* DNS node: everything we know about a domain name *)
-and dnsnode = {
-    owner: string list Hashcons.hash_consed;
-    mutable rrsets: rrset list;
-}
-
-(* RRSet: TTL, type, and some number of rdata *)
-and rrset = {
-    ttl: int32;
-    rdata: rdata; 
-  }
-
-and rdata = 
-  | A of ipv4 list (* always length = 1 *)
-  | NS of dnsnode list
-(* MD and MF are obsolete; use MX for them *)
-  | CNAME of dnsnode list
-  | SOA of (dnsnode * dnsnode * serial * int32 * int32 * int32 * int32) list
-  | MB of dnsnode list
-  | MG of dnsnode list
-  | MR of dnsnode list
-  | WKS of (int32 * int * cstr) list 
-  | PTR of dnsnode list
-  | HINFO of (cstr * cstr) list
-  | MINFO of (dnsnode * dnsnode) list
-  | MX of (int * dnsnode) list 
-  | TXT of (cstr list) list
-  | RP of (dnsnode * dnsnode) list
-  | AFSDB of (int * dnsnode) list
-  | X25 of cstr list
-  | ISDN of (cstr * cstr option) list
-  | RT of (int * dnsnode) list
-  | AAAA of cstr list
-  | SRV of (int * int * int * dnsnode) list
-  | UNSPEC of cstr list
-  | Unknown of int * cstr list
 
 (* XXX add other RR types *)
 (* wire-domain type for non-rfc1035 rdata? *)

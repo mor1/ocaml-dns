@@ -17,9 +17,12 @@
  *
  *)
 
+open Types
+open Uri_IP
+
 (* Loader database: the DNS trie plus a hash table of other names in use *)
 type db = { trie : Trie.dnstrie; 
-	    mutable names : (Trie.key, RR.dnsnode) Hashtbl.t; } 
+	    mutable names : (Trie.key, dnsnode) Hashtbl.t; } 
 
 (* Make a new, empty database *)
 val new_db : unit -> db
@@ -29,11 +32,11 @@ val no_more_updates : db -> unit
 
 (* Insert RRs in the database: args are rdata, ttl, owner, db *)
 val add_generic_rr : int -> string -> int32 -> string list -> db -> unit
-val add_a_rr : RR.ipv4 -> int32 -> string list -> db -> unit
+val add_a_rr : ipv4 -> int32 -> string list -> db -> unit
 val add_ns_rr : string list -> int32 -> string list -> db -> unit
 val add_cname_rr : string list -> int32 -> string list -> db -> unit
 val add_soa_rr : 
-    string list -> string list -> RR.serial -> 
+    string list -> string list -> serial -> 
       int32 -> int32 -> int32 -> int32 -> 
 	int32 -> string list -> db -> unit
 val add_mb_rr : string list -> int32 -> string list -> db -> unit

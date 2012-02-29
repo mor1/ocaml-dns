@@ -19,6 +19,7 @@
 
 open RR
 open Trie
+open Types
 
 (* Loader database: the DNS trie plus a hash table of other names in use *)
 type db = {

@@ -17,13 +17,15 @@
  *
  *)
 
+open Types
+
 type query_answer = {
-  rcode : Packet.rcode;
+  rcode : rcode;
   aa: bool;
-  answer: Packet.rsrc_record list;
-  authority: Packet.rsrc_record list;
-  additional: Packet.rsrc_record list;
+  answer: rsrc_record list;
+  authority: rsrc_record list;
+  additional: rsrc_record list;
 }
 
 val answer_query : string list -> 
-  Packet.q_type -> Trie.dnstrie -> query_answer
+  q_type -> Trie.dnstrie -> query_answer

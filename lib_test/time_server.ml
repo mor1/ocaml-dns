@@ -23,17 +23,19 @@ let time_rsrc_record () =
   let rr_ttl = 100l in
   let time = string_of_float (Unix.gettimeofday ()) in
   let rr_rdata = `TXT [ "the"; "time"; "is"; time] in
-  { Dns.Packet.rr_name; rr_class; rr_ttl; rr_rdata }
+  { Dns.Types.rr_name; rr_class; rr_ttl; rr_rdata }
 
 let dnsfn ~src ~dst query =
-  let open Dns.Packet in
-  let module DQ = Dns.Query in
-  match query.questions with
-  |q::_ -> (* Just take the first question *)
-    let answer = [ time_rsrc_record () ] in
-    let ans = { DQ.rcode=`NoError; aa=true; authority=[]; additional=[]; answer } in
-    return (Some ans)
-  |_ -> return None (* No questions in packet *)
+  Dns.Types.(
+    let open Dns.Packet in
+    let module DQ = Dns.Query in
+    match query.questions with
+      |q::_ -> (* Just take the first question *)
+        let answer = [ time_rsrc_record () ] in
+        let ans = { DQ.rcode=`NoError; aa=true; authority=[]; additional=[]; answer } in
+        return (Some ans)
+      |_ -> return None (* No questions in packet *)
+  )
 
 let listen ~address ~port =
   lwt fd, src = Dns_server.bind_fd ~address ~port in
