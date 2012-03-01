@@ -30,7 +30,8 @@ let sp = Printf.sprintf
 let pr = Printf.printf
 let ep = Printf.eprintf
 
-let join c l = String.concat c l
+(* let join c l = String.concat c l *)
+let join c l = List.fold_left (fun x y -> x ^ c ^ y) "" l
 let stop (x, bits) = x (* drop remainder to stop parsing and demuxing *) 
 
 exception Unparsable of string * Bitstring.bitstring
@@ -556,11 +557,11 @@ let marshal dns =
     let lo =  (ptr &&& 0x00ff_l)        |> Int32.to_int |> byte in
     sp "%c%c" hi lo
   in
-  
-  let mn (labels:domain_name) = 
+
+  let mn_compress (labels:domain_name) = 
     let lset = 
       let rec aux = function
-        | [] -> [ [] ]
+        | [] -> [] (* [ [] ] is wrong- gives \0\0 answer given empty q *)
         | x :: [] -> [ x :: [] ]
         | hd :: tl -> (hd :: tl) :: (aux tl)
       in aux labels
@@ -568,6 +569,7 @@ let marshal dns =
 
     let bits = ref [] in    
     let pointed = ref false in
+    ep "mn_compress: lset.length=%d\n%!" (List.length lset);
     List.iter (fun l ->
       if (not !pointed) then (
         match lookup names l with
@@ -592,31 +594,30 @@ let marshal dns =
             )
       )
     ) lset;
+    ep "mn_compress: pointed=%b\n%!" (!pointed);
     if (not !pointed) then (
       bits := "\000" :: !bits;
       pos := !pos + 1
     );
     !bits |> List.rev |> String.concat "" |> (fun s -> 
-      BITSTRING { s:((String.length s)*8):string })
+      ep "mn_compress: (%d) '%s'\n%!" (String.length s) s;
+      (BITSTRING { s:((String.length s)*8):string }))
   in
 
-(*
-  let mn (labels:domain_name) =
+  let mn_simple (labels:domain_name) =
     let bits = ref [] in
-    List.iter (fun s -> 
-      let cs = charstr s in
-      bits := cs :: !bits
-    ) labels;
+    List.iter (fun s -> bits := (charstr s) :: !bits) labels;
     !bits |> List.rev |> String.concat ""
-           |> (fun s -> 
+           |> (fun s -> ep "mn_simple: (%d) '%s'\n%!" (String.length s) s;
              if String.length s > 0 then
                BITSTRING { s:((String.length s)*8):string; 0:8 }
              else
                BITSTRING { 0:8 }
            )
-  in
-*)
-  
+  in  
+
+  let mn = mn_simple in
+
   let mr r = 
     let mrd (rd:rr_rdata) = match rd with
       | `A ip -> BITSTRING { ip:32 }, `A
