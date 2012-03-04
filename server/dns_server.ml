@@ -45,21 +45,46 @@ let listen ~fd ~src ~(dnsfn:dnsfn) =
     let names = Hashtbl.create 64 in
     while_lwt !cont do
       Lwt_pool.use bufs (fun buf ->
+        Printf.eprintf "listen: rx\n%!";
         lwt len, dst = Lwt_unix.recvfrom fd buf 0 (String.length buf) [] in
         let bits = buf, 0, (len*8) in
-        let query = try Some (DP.parse_dns names bits)
-          with exn -> eprintf "dns parse exn: %s\n%!" (Printexc.to_string exn); None in
+        let query = try Some (
+          let q = DP.parse_dns names bits in 
+          eprintf "%s\n%!" (DP.dns_to_string q);
+          q
+        ) with
+          | exn 
+            -> (eprintf "dns parse exn: %s\n%!" (Printexc.to_string exn); 
+                None)
+        in
+        eprintf "1\n%!";
         match query with
-        |None -> return ()
+        |None -> eprintf "None\n%!"; return ()
         |Some query -> begin
+          eprintf "Some\n%!";
           lwt answer = dnsfn ~src ~dst query in
+          eprintf "urk xxx\n%!";
           match answer with
-          |None -> return ()
-          |Some answer ->
-            let detail = DP.(DT.(build_detail { qr=`Answer; opcode=`Query; aa=answer.DQ.aa;
-              tc=false; rd=false; ra=false; rcode=answer.DQ.rcode })) in
-            let response = DP.(DT.({ id=query.id; detail; questions=query.questions; answers=answer.DQ.answer;
-              authorities=answer.DQ.authority; additionals=answer.DQ.additional })) in
+          | None -> eprintf "none!\n%!"; return ()
+          | Some answer ->
+            eprintf "YYY\n%!";
+            ignore(try
+              eprintf "some! %s\n%!" (DQ.query_answer_to_string answer)
+            with e -> eprintf "XXXXXXX %s\n%!" (Printexc.to_string e));
+            let detail = DP.(DT.(
+              build_detail { qr=`Answer; opcode=`Query; aa=answer.DQ.aa;
+                             tc=false; rd=false; ra=false;
+                             rcode=answer.DQ.rcode
+                           })) 
+            in
+            let response = DP.(DT.(
+              { id=query.id; detail; 
+                questions=query.questions; 
+                answers=answer.DQ.answer;
+                authorities=answer.DQ.authority;
+                additionals=answer.DQ.additional })) 
+            in
+            eprintf "listen: tx\n%s\n%!" (DP.dns_to_string response);
             let buf, boff, blen = DP.marshal response in
             (* TODO transmit queue, rather than ignoring result here *)
             let _ = Lwt_unix.sendto fd buf (boff/8) (blen/8) [] dst in
@@ -71,7 +96,7 @@ let listen ~fd ~src ~(dnsfn:dnsfn) =
   let t,u = Lwt.task () in
   Lwt.on_cancel t
     (fun () ->
-       Printf.eprintf "listen: canceled\n%!";
+       Printf.eprintf "listen: cancelled\n%!";
        cont := false
     );
   Printf.eprintf "listen: done\n%!";
@@ -86,6 +111,7 @@ let listen_with_zonebuf ~address ~port ~zonebuf ~mode =
     DQ.answer_query qname qtype dnstrie
   in
   let (dnsfn:dnsfn) =
+    eprintf "dnsfn\n%!";
     match mode with
     |`none ->
       (fun ~src ~dst d ->

@@ -30,8 +30,6 @@ let sp = Printf.sprintf
 let pr = Printf.printf
 let ep = Printf.eprintf
 
-(* let join c l = String.concat c l *)
-let join c l = List.fold_left (fun x y -> x ^ c ^ y) "" l
 let stop (x, bits) = x (* drop remainder to stop parsing and demuxing *) 
 
 exception Unparsable of string * Bitstring.bitstring
@@ -257,11 +255,37 @@ and string_of_rr_type:rr_type -> string = function
   | `UNSPEC   -> "UNSPEC"
   | `Unknown (i, _) -> Printf.sprintf "Unknown (%d)" i
 
-let string_of_rdata r = 
-  match r with
+let string_of_rdata r = function
     | `A ip -> sp "A (%s)" (string_of_ipv4 ip)
     | `NS n -> sp "NS (%s)" (join "." n)
-    | _     -> failwith "string_of_rdata: unknown rdata type"
+    | `MD n -> sp "MD (%s)" (join "." n)
+    | `MF n -> sp "MF (%s)" (join "." n)
+    | `CNAME n -> sp "CNAME (%s)" (join "." n)
+(*
+    | `SOA (m,n, of 
+        domain_name * domain_name * int32 * int32 * int32 * int32 * int32 
+    | `HINFO of string * string
+    | `MB n -> sp "MB (%s)" (join "." n)
+    | `MG n -> sp "MG (%s)" (join "." n)
+    | `MR n -> sp "MR (%s)" (join "." n)
+    | `MINFO of domain_name * domain_name
+    | `MX of int16 * domain_name
+    | `PTR n -> sp "MF (%s)" (join "." n) of domain_name
+    | `TXT of string list
+    | `WKS of int32 * byte * string
+    | `RP of domain_name * domain_name
+    | `AFSDB of int16 * domain_name
+    | `X25 of string
+    | `ISDN of string
+    | `RT of int16 * domain_name
+    | `AAAA of bytes
+    | `SRV of int16 * int16 * int16 * domain_name
+    | `UNSPEC of bytes
+    | `UNKNOWN of int * bytes
+*)
+
+    | _ as x -> 
+      failwith "string_of_rdata: unknown rdata type: %s" (string_of_rr_type x);
 
 let parse_rdata names base t bits = 
   RR.(
@@ -540,6 +564,7 @@ let parse_dns names bits =
   )
 
 let marshal dns = 
+  ep "marshal: dns=%s\n%!" (dns_to_string dns);
   let pos = ref 0 in
   let (names:(string list,int) Hashtbl.t) = Hashtbl.create 8 in
 
@@ -567,7 +592,7 @@ let marshal dns =
       in aux labels
     in 
 
-    let bits = ref [] in    
+                                 let bits = ref [] in    
     let pointed = ref false in
     ep "mn_compress: lset.length=%d\n%!" (List.length lset);
     List.iter (fun l ->

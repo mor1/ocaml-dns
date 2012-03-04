@@ -43,5 +43,5 @@ let listen ~address ~port =
 
 let _ =
   let address = "0.0.0.0" in
-  let port = 5354 in
+  let port = 5335 in
   Lwt_main.run (listen ~address ~port)

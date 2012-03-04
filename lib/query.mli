@@ -27,5 +27,7 @@ type query_answer = {
   additional: rsrc_record list;
 }
 
+val query_answer_to_string : query_answer -> string
+
 val answer_query : string list -> 
   q_type -> Trie.dnstrie -> query_answer

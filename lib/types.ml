@@ -68,10 +68,6 @@ and dnsnode = {
   mutable rrsets : rrset list; 
 } 
 
-
-
-
-
 type rr_type = [
 | `A | `NS | `MD | `MF | `CNAME | `SOA | `MB | `MG | `MR | `NULL 
 | `WKS | `PTR | `HINFO | `MINFO | `MX | `TXT | `RP | `AFSDB | `X25 
@@ -81,7 +77,6 @@ type rr_type = [
 | `RRSIG | `NSEC | `DNSKEY | `SPF | `UINFO | `UID | `GID | `UNSPEC
 | `Unknown of int * bytes
 ]
-
 
 type rr_rdata = [
 | `A of int32
@@ -115,7 +110,6 @@ type rr_class = [ `IN | `CS | `CH | `HS ]
 type q_type = [ rr_type | `AXFR | `MAILB | `MAILA | `ANY | `TA | `DLV ]
 type q_class = [ rr_class | `NONE | `ANY ]
 type qr = [ `Query | `Answer ]
-
 type opcode = [ qr | `Status | `Reserved | `Notify | `Update ]
 
 type rcode = [

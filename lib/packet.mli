@@ -24,7 +24,7 @@ val int_of_rr_type : rr_type -> int
 val rr_type_of_int : int -> rr_type
 val string_of_rr_type : rr_type -> string
 
-val string_of_rdata : [> `A of int32 | `NS of string list ] -> string
+val string_of_rdata : rr_rdata -> string
 val parse_rdata : (int, label) Hashtbl.t -> int -> rr_type -> Bitstring.bitstring -> rr_rdata
 
 val int_of_rr_class : rr_class -> int

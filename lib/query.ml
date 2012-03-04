@@ -35,6 +35,13 @@ type query_answer = {
   additional: rsrc_record list;
 } 
 
+let query_answer_to_string qa = 
+  Printf.sprintf "rcode:%s aa:%b answer:%s auth:%s adds:%s" 
+    (qa.rcode |> DP.string_of_rcode) qa.aa
+    (qa.answer ||> DP.rr_to_string |> join ",")
+    (qa.authority ||> DP.rr_to_string |> join ",")
+    (qa.additional ||> DP.rr_to_string |> join ",")
+
 let answer_query qname qtype trie = 
 
   let aa_flag = ref true in
@@ -286,12 +293,15 @@ let answer_query qname qtype trie =
   in
   
   try 
+    Printf.eprintf "A\n%!";
     let rc = main_lookup qname qtype trie in	
+    Printf.eprintf "B\n%!";
     List.iter (fun (o, t) -> add_opt_rrset o t `Additional) !addqueue;
+    Printf.eprintf "C\n%!";
     { rcode = rc; aa = !aa_flag; 
       answer = !ans_rrs; authority = !auth_rrs; additional = !add_rrs }
   with 
-      BadDomainName _ -> { rcode = `FormErr; aa = false; 
+    | BadDomainName _ -> { rcode = `FormErr; aa = false; 
 			               answer = []; authority = []; additional=[] }
     | TrieCorrupt ->  { rcode = `ServFail; aa = false;
 		                answer = []; authority = []; additional=[] }
