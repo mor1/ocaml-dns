@@ -10,7 +10,7 @@ BuildTools:  ocamlbuild
 Library dns
   Path: lib 
   Findlibname: dns
-  Pack: true
+#  Pack: true
   Modules: 
     Hashcons, Loader, Name, Operators, Packet, Query, RR, Trie, Wire, 
     Zone, Zone_lexer, Zone_parser
@@ -21,7 +21,7 @@ Library server
   Findlibname: server
   Modules: Dns_server
   BuildDepends: 
-    lwt, lwt.unix, lwt.syntax, bitstring, bitstring.syntax, uri, dns
+    lwt, lwt.unix, lwt.syntax, bitstring, bitstring.syntax, uri, dns, cryptokit
   FindlibParent: dns
 
 Library resolver

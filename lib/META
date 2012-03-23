@@ -15,7 +15,7 @@ package "server" (
  exists_if = "server.cma"
 )
 
-package "server" (
+package "resolver" (
  version = "0.9-dev"
  description = "DNS protocol library for Lwt"
  requires = "lwt lwt.unix lwt.syntax bitstring bitstring.syntax uri dns"

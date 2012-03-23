@@ -28,6 +28,7 @@ type dnssec_alg =
   | DSA
   | ECC
   | RSASHA1
+  | RSANSEC3
   | RSASHA256
   | RSASHA512
   | UNKNOWN
@@ -37,6 +38,7 @@ let int_to_dnssec_alg = function
   | 3  -> DSA
   | 4  -> ECC
   | 5  -> RSASHA1
+  | 7  -> RSANSEC3
   | 8  -> RSASHA256
   | 10 -> RSASHA512
   | _  -> UNKNOWN
@@ -46,6 +48,7 @@ let dnssec_alg_to_int = function
   | DSA       -> 3
   | ECC       -> 4
   | RSASHA1   -> 5
+  | RSANSEC3  -> 7
   | RSASHA256 -> 8
   | RSASHA512 -> 10
   | UNKNOWN   -> 6
@@ -55,6 +58,7 @@ let dnssec_alg_to_string = function
   | DSA       -> "DSA"
   | ECC       -> "ECC"
   | RSASHA1   -> "RSASHA1"
+  | RSANSEC3 -> "RSANSEC3"
   | RSASHA256 -> "RSASHA256"
   | RSASHA512 -> "RSASHA512"
   | UNKNOWN   -> "UNK"
@@ -820,7 +824,7 @@ let marshal_dns dns =
       | `DNSKEY (flags, alg, key)
          -> 
           let bkey = Cryptokit.(transform_string (Base64.encode_compact ()) key) in
-          (BITSTRING { flags:16; 3:8; (dnssec_alg_to_int alg):8; bkey:-1:string }, `DNSKEY)
+          (BITSTRING { flags:16; 3:8; (dnssec_alg_to_int alg):8; key:-1:string }, `DNSKEY)
       | `HINFO (cpu, os) -> BITSTRING { cpu:-1:string; os:-1:string }, `HINFO
       | `ISDN (a, sa) -> (
         (match sa with 
