@@ -38,8 +38,7 @@ Document dns
   Type:                 ocamlbuild (0.3)
   BuildTools+:          ocamldoc
   XOCamlbuildPath:      lib  
-  XOCamlbuildModules:     
-    Hashcons, Loader, Name, Operators, Packet, Query, RR, Trie, Zone
+  XOCamlbuildLibraries: dns
 
 Executable lwt_server
   Path:               lib_test
