@@ -86,7 +86,6 @@ Executable lwt_unix_time_server
   CompiledObject:     best
   Install:            false
   BuildDepends:       dns, dns.server_lwt_unix
-#lwt, lwt.unix, re, re.str, dns, dns.server_lwt_unix
 
 Executable odig
   Path:               bin
