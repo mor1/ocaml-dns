@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 5920a54c05404265bfbbdc3e5c3d0d69) *)
+(* DO NOT EDIT (digest: 3ed4be3704d24fa3f0d16f139420b04a) *)
 module OASISGettext = struct
 # 21 "/Users/mort/.opam/3.12.1+mirage-unix-direct/build/oasis.0.3.0/src/oasis/OASISGettext.ml"
 
@@ -491,7 +491,7 @@ let package_default =
        [
           ("server", ["lib"]);
           ("resolver", ["lib"]);
-          ("bin", ["lib"; "server"])
+          ("bin", ["lib"; "resolver"; "server"])
        ];
      }
   ;;

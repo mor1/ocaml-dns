@@ -29,13 +29,13 @@ let usage () =
   exit 1
 
 let lookup_name s = 
-  lwt ans = Dns_resolver.gethostbyname s in 
+  lwt ans = Resolver_lwt_unix.gethostbyname s in 
   let ans = (ans ||> Cstruct.ipv4_to_string |> String.concat "; ") in
   printf "%s -> %s\n%!" s ans;
   return ()
            
 let lookup_addr s = 
-  lwt ans = Dns_resolver.gethostbyaddr s in
+  lwt ans = Resolver_lwt_unix.gethostbyaddr s in
   printf "%s -> %s\n%!" (ipv4_to_string s) (String.concat "; " ans);
   return ()
            

@@ -81,21 +81,22 @@ Executable lwt_unix_server
 Executable lwt_unix_time_server
   Path:               bin
   MainIs:             lwt_unix_time_server.ml
-  Build$:             flag(tests)
+  Build$:             flag(tests) && flag(lwt)
   Custom:             true
   CompiledObject:     best
   Install:            false
-  BuildDepends:       lwt, lwt.unix, re, re.str, dns, dns.server_lwt_unix
+  BuildDepends:       dns, dns.server_lwt_unix
+#lwt, lwt.unix, re, re.str, dns, dns.server_lwt_unix
 
-# Executable odig
-#   Path:               client
-#   MainIs:             odig.ml
-#   Build$:             flag(tests)
-#   Custom:             true
-#   CompiledObject:     best
-#   Install:            false
-#   BuildDepends:       
-#     lwt, lwt.unix, lwt.syntax, re, re.str, dns, dns.resolver, uri
+Executable odig
+  Path:               bin
+  MainIs:             odig.ml
+  Build$:             flag(tests) && flag(lwt)
+  Custom:             true
+  CompiledObject:     best
+  Install:            false
+  BuildDepends:       dns, dns.resolver_lwt_unix, uri
+
 
 # Test lwt_server
 #   Run$:               flag(tests)
