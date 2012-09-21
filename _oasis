@@ -18,11 +18,11 @@ Library dns
   BuildDepends:	cstruct, cstruct.syntax, re, re.str
 
 Flag lwt
-  Description: build the Lwt library
+  Description: build against the Lwt library (for Unix)
   Default: false
 
 Flag mirage
-  Description: build the Mirage library
+  Description: build against the Mirage library (uses Lwt)
   Default: false
 
 Library server_lwt_unix
@@ -34,15 +34,6 @@ Library server_lwt_unix
   BuildDepends: lwt, lwt.unix, lwt.syntax, cstruct, cstruct.syntax, dns
   Modules: Server_lwt_unix
 
-Library server_lwt_mirage
-  Build$: flag(mirage)
-  Install$: flag(mirage)
-  Path: server
-  FindlibName: server_lwt_mirage
-  FindlibParent: dns
-  BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, mirage, mirage-net
-  Modules: Server_lwt_mirage
-
 Library resolver_lwt_unix
   Build$: flag(lwt)
   Install$: flag(lwt)
@@ -51,6 +42,15 @@ Library resolver_lwt_unix
   FindlibParent: dns
   BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, lwt, lwt.unix
   Modules: Resolver_lwt_unix
+
+Library server_lwt_mirage
+  Build$: flag(mirage)
+  Install$: flag(mirage)
+  Path: server
+  FindlibName: server_lwt_mirage
+  FindlibParent: dns
+  BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, mirage, mirage-net
+  Modules: Server_lwt_mirage
 
 Library resolver_lwt_mirage
   Build$: flag(mirage)
@@ -95,6 +95,15 @@ Executable odig
   CompiledObject:     best
   Install:            false
   BuildDepends:       dns, dns.resolver_lwt_unix, uri
+
+Executable lwt_mirage_server
+  Path:               bin
+  MainIs:             lwt_mirage_server.ml
+  Build$:             flag(tests) && flag(mirage)
+  Custom:             true
+  CompiledObject:     best
+  Install:            false
+  BuildDepends:       dns, dns.server_lwt_mirage
 
 
 # Test lwt_server

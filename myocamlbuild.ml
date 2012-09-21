@@ -1,7 +1,7 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 3ed4be3704d24fa3f0d16f139420b04a) *)
+(* DO NOT EDIT (digest: e64548831cf8d58f0219488a18345d8d) *)
 module OASISGettext = struct
-# 21 "/Users/mort/.opam/3.12.1+mirage-unix-direct/build/oasis.0.3.0/src/oasis/OASISGettext.ml"
+# 21 "/Users/mort/.opam/3.12.1+mirage-xen/build/oasis.0.3.0/src/oasis/OASISGettext.ml"
 
   let ns_ str =
     str
@@ -24,7 +24,7 @@ module OASISGettext = struct
 end
 
 module OASISExpr = struct
-# 21 "/Users/mort/.opam/3.12.1+mirage-unix-direct/build/oasis.0.3.0/src/oasis/OASISExpr.ml"
+# 21 "/Users/mort/.opam/3.12.1+mirage-xen/build/oasis.0.3.0/src/oasis/OASISExpr.ml"
 
 
 
@@ -116,7 +116,7 @@ end
 
 # 117 "myocamlbuild.ml"
 module BaseEnvLight = struct
-# 21 "/Users/mort/.opam/3.12.1+mirage-unix-direct/build/oasis.0.3.0/src/base/BaseEnvLight.ml"
+# 21 "/Users/mort/.opam/3.12.1+mirage-xen/build/oasis.0.3.0/src/base/BaseEnvLight.ml"
 
   module MapString = Map.Make(String)
 
@@ -214,7 +214,7 @@ end
 
 # 215 "myocamlbuild.ml"
 module MyOCamlbuildFindlib = struct
-# 21 "/Users/mort/.opam/3.12.1+mirage-unix-direct/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml"
+# 21 "/Users/mort/.opam/3.12.1+mirage-xen/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildFindlib.ml"
 
   (** OCamlbuild extension, copied from 
     * http://brion.inria.fr/gallium/index.php/Using_ocamlfind_with_ocamlbuild
@@ -323,7 +323,7 @@ module MyOCamlbuildFindlib = struct
 end
 
 module MyOCamlbuildBase = struct
-# 21 "/Users/mort/.opam/3.12.1+mirage-unix-direct/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
+# 21 "/Users/mort/.opam/3.12.1+mirage-xen/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
 
   (** Base functions for writing myocamlbuild.ml
       @author Sylvain Le Gall
@@ -339,7 +339,7 @@ module MyOCamlbuildBase = struct
   type name = string 
   type tag = string 
 
-# 56 "/Users/mort/.opam/3.12.1+mirage-unix-direct/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
+# 56 "/Users/mort/.opam/3.12.1+mirage-xen/build/oasis.0.3.0/src/plugins/ocamlbuild/MyOCamlbuildBase.ml"
 
   type t =
       {
@@ -481,8 +481,8 @@ let package_default =
        [
           ("dns", ["lib"]);
           ("server_lwt_unix", ["server"]);
-          ("server_lwt_mirage", ["server"]);
           ("resolver_lwt_unix", ["resolver"]);
+          ("server_lwt_mirage", ["server"]);
           ("resolver_lwt_mirage", ["resolver"])
        ];
      lib_c = [];
