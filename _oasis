@@ -17,58 +17,87 @@ Library dns
     Zone, Zone_lexer, Zone_parser
   BuildDepends:	cstruct, cstruct.syntax, re, re.str
 
-Library server
-  Path: lib
-  Findlibname: server
-  Modules: Dns_server
-  BuildDepends: 
-    lwt, lwt.unix, lwt.syntax, cstruct, cstruct.syntax, dns
-  FindlibParent: dns
+Flag lwt
+  Description: build the Lwt library
+  Default: false
 
-Library resolver
-  Path: lib
-  Findlibname: resolver
-  Modules: Dns_resolver
-  BuildDepends: 
-    lwt, lwt.unix, lwt.syntax, cstruct, cstruct.syntax, dns
+Flag mirage
+  Description: build the Mirage library
+  Default: false
+
+Library server_lwt_unix
+  Build$: flag(lwt)
+  Install$: flag(lwt)
+  Path: lwt
+  Findlibname: server_lwt_unix
   FindlibParent: dns
+  BuildDepends: lwt, lwt.unix, lwt.syntax, cstruct, cstruct.syntax, dns
+  Modules: Server_lwt_unix
+
+Library server_lwt_mirage
+  Build$: flag(mirage)
+  Install$: flag(mirage)
+  Path: lwt
+  Findlibname: server_lwt_mirage
+  FindlibParent: dns
+  BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, mirage, mirage-net
+  Modules: Server_lwt_mirage
+
+Library resolver_lwt_unix
+  Build$: flag(lwt)
+  Install$: flag(lwt)
+  Path: lwt
+  Findlibname: resolver_lwt_unix
+  FindlibParent: dns
+  BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, lwt, lwt.unix
+  Modules: Resolver_lwt_unix
+
+Library resolver_lwt_mirage
+  Build$: flag(mirage)
+  Install$: flag(mirage)
+  Path: lwt
+  Findlibname: resolver_lwt_mirage
+  FindlibParent: dns
+  BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, mirage, mirage-net
+  Modules: Resolver_lwt_mirage
 
 Document dns
   Title:                DNS docs
   Type:                 ocamlbuild (0.3)
   BuildTools+:          ocamldoc
+  Install:              false
   XOCamlbuildPath:      lib  
   XOCamlbuildLibraries: dns
 
-Executable lwt_server
-  Path:               lib_test
-  MainIs:             lwt_server.ml
-  Build$:             flag(tests)
-  Custom:             true
-  CompiledObject:     best
-  Install:            false
-  BuildDepends:       lwt, lwt.unix, re, re.str, dns, dns.server
+# Executable lwt_server
+#   Path:               lib_test
+#   MainIs:             lwt_server.ml
+#   Build$:             flag(tests)
+#   Custom:             true
+#   CompiledObject:     best
+#   Install:            false
+#   BuildDepends:       lwt, lwt.unix, re, re.str, dns, dns.server
 
-Executable time_server
-  Path:               lib_test
-  MainIs:             time_server.ml
-  Build$:             flag(tests)
-  Custom:             true
-  CompiledObject:     best
-  Install:            false
-  BuildDepends:       lwt, lwt.unix, re, re.str, dns
+# Executable time_server
+#   Path:               lib_test
+#   MainIs:             time_server.ml
+#   Build$:             flag(tests)
+#   Custom:             true
+#   CompiledObject:     best
+#   Install:            false
+#   BuildDepends:       lwt, lwt.unix, re, re.str, dns
 
-Executable odig
-  Path:               client
-  MainIs:             odig.ml
-  Build$:             flag(tests)
-  Custom:             true
-  CompiledObject:     best
-  Install:            false
-  BuildDepends:       
-    lwt, lwt.unix, lwt.syntax, re, re.str, dns, dns.resolver, uri
+# Executable odig
+#   Path:               client
+#   MainIs:             odig.ml
+#   Build$:             flag(tests)
+#   Custom:             true
+#   CompiledObject:     best
+#   Install:            false
+#   BuildDepends:       
+#     lwt, lwt.unix, lwt.syntax, re, re.str, dns, dns.resolver, uri
 
-Test lwt_server
-  Run$:               flag(tests)
-  Command:            $lwt_server
-  WorkingDirectory:   lib_test
+# Test lwt_server
+#   Run$:               flag(tests)
+#   Command:            $lwt_server
+#   WorkingDirectory:   lib_test

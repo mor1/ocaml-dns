@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 40661bb1e322da665aeccae1b2a427cd)
+# DO NOT EDIT (digest: eca5fd1096d1707f16d987e3701ca7e1)
 version = "0.4.1"
 description = "DNS protocol library for Lwt"
 requires = "cstruct cstruct.syntax re re.str"
@@ -8,26 +8,48 @@ archive(byte, plugin) = "dns.cma"
 archive(native) = "dns.cmxa"
 archive(native, plugin) = "dns.cmxs"
 exists_if = "dns.cma"
-package "server" (
+package "server_lwt_unix" (
  version = "0.4.1"
  description = "DNS protocol library for Lwt"
  requires = "lwt lwt.unix lwt.syntax cstruct cstruct.syntax dns"
- archive(byte) = "server.cma"
- archive(byte, plugin) = "server.cma"
- archive(native) = "server.cmxa"
- archive(native, plugin) = "server.cmxs"
- exists_if = "server.cma"
+ archive(byte) = "server_lwt_unix.cma"
+ archive(byte, plugin) = "server_lwt_unix.cma"
+ archive(native) = "server_lwt_unix.cmxa"
+ archive(native, plugin) = "server_lwt_unix.cmxs"
+ exists_if = "server_lwt_unix.cma"
 )
 
-package "resolver" (
+package "server_lwt_mirage" (
  version = "0.4.1"
  description = "DNS protocol library for Lwt"
- requires = "lwt lwt.unix lwt.syntax cstruct cstruct.syntax dns"
- archive(byte) = "resolver.cma"
- archive(byte, plugin) = "resolver.cma"
- archive(native) = "resolver.cmxa"
- archive(native, plugin) = "resolver.cmxs"
- exists_if = "resolver.cma"
+ requires = "lwt.syntax cstruct cstruct.syntax dns mirage mirage-net"
+ archive(byte) = "server_lwt_mirage.cma"
+ archive(byte, plugin) = "server_lwt_mirage.cma"
+ archive(native) = "server_lwt_mirage.cmxa"
+ archive(native, plugin) = "server_lwt_mirage.cmxs"
+ exists_if = "server_lwt_mirage.cma"
+)
+
+package "resolver_lwt_unix" (
+ version = "0.4.1"
+ description = "DNS protocol library for Lwt"
+ requires = "lwt.syntax cstruct cstruct.syntax dns lwt lwt.unix"
+ archive(byte) = "resolver_lwt_unix.cma"
+ archive(byte, plugin) = "resolver_lwt_unix.cma"
+ archive(native) = "resolver_lwt_unix.cmxa"
+ archive(native, plugin) = "resolver_lwt_unix.cmxs"
+ exists_if = "resolver_lwt_unix.cma"
+)
+
+package "resolver_lwt_mirage" (
+ version = "0.4.1"
+ description = "DNS protocol library for Lwt"
+ requires = "lwt.syntax cstruct cstruct.syntax dns mirage mirage-net"
+ archive(byte) = "resolver_lwt_mirage.cma"
+ archive(byte, plugin) = "resolver_lwt_mirage.cma"
+ archive(native) = "resolver_lwt_mirage.cmxa"
+ archive(native, plugin) = "resolver_lwt_mirage.cmxs"
+ exists_if = "resolver_lwt_mirage.cma"
 )
 # OASIS_STOP
 
