@@ -92,15 +92,10 @@
 <bin/lwt_unix_time_server.{native,byte}>: custom
 # OASIS_STOP
 true: annot
-<lib/*>: syntax_camlp4o
-<lib/*>: pkg_lwt.syntax
-<lwt/*>: syntax_camlp4o
-<lwt/*>: pkg_lwt.syntax
-<server/*>: syntax_camlp4o
-<server/*>: pkg_lwt.syntax
-<lib_test/*>: syntax_camlp4o
-<lib_test/*>: pkg_lwt.syntax
-<resolver/*>: syntax_camlp4o
-<resolver/*>: pkg_lwt.syntax
-<client/*>: syntax_camlp4o
-<client/*>: pkg_lwt.syntax
+<lib/*>: syntax_camlp4o, pkg_lwt.syntax
+<lwt/*>: syntax_camlp4o, pkg_lwt.syntax
+<server/*>: syntax_camlp4o, pkg_lwt.syntax
+<lib_test/*>: syntax_camlp4o, pkg_lwt.syntax
+<resolver/*>: syntax_camlp4o, pkg_lwt.syntax
+<client/*>: syntax_camlp4o, pkg_lwt.syntax
+<bin/*>: syntax_camlp4o, pkg_lwt.syntax

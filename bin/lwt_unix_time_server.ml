@@ -29,6 +29,8 @@ let time_rsrc_record () =
 
 let dnsfn ~src ~dst query =
   let open Dns.Packet in
+      Printf.printf "XXX\n%!";
+
       match query.questions with
         | q::_ -> (* Just take the first question *)
             return (Some 
@@ -40,10 +42,12 @@ let dnsfn ~src ~dst query =
         | _ -> return None (* No questions in packet *)
 
 let listen ~address ~port =
-  lwt fd, src = Dns_server.bind_fd ~address ~port in
-  Dns_server.listen ~fd ~src ~dnsfn
+  Server_lwt_unix.(
+    lwt fd, src = bind_fd ~address ~port in
+    listen ~fd ~src ~dnsfn
+  )
 
 let _ =
   let address = "0.0.0.0" in
-  let port = 5354 in
+  let port = 5335 in
   Lwt_main.run (listen ~address ~port)

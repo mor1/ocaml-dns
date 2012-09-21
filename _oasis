@@ -72,11 +72,11 @@ Document dns
 Executable lwt_unix_server
   Path:               bin
   MainIs:             lwt_unix_server.ml
-  Build$:             flag(tests)
+  Build$:             flag(tests) && flag(lwt)
   Custom:             true
   CompiledObject:     best
   Install:            false
-  BuildDepends:       lwt, lwt.unix, re, re.str, dns, dns.server_lwt_unix
+  BuildDepends:       dns, dns.server_lwt_unix
 
 Executable lwt_unix_time_server
   Path:               bin
