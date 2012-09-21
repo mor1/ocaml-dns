@@ -29,8 +29,6 @@ let time_rsrc_record () =
 
 let dnsfn ~src ~dst query =
   let open Dns.Packet in
-      Printf.printf "XXX\n%!";
-
       match query.questions with
         | q::_ -> (* Just take the first question *)
             return (Some 

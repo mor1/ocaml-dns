@@ -550,6 +550,8 @@ let parse_rdata names base t buf =
         let x25,_ = parse_charstr buf in
         X25 x25
 
+    | _ -> failwith (Printf.sprintf "unknown rdata:%s\n%!" (rr_type_to_string t))
+
 let marshal_rdata names base buf rdata = 
   let base, rdbuf = base+sizeof_rr, Cstruct.shift buf sizeof_rr in
   let t, names, rdlen = match rdata with 
@@ -698,7 +700,6 @@ let parse_rr names base buf =
   let t = get_rr_typ buf in
   match int_to_rr_type t with
     | None -> failwith (sprintf "parse_rr: unknown type: %d" t)
-
     | Some typ ->
         let ttl = get_rr_ttl buf in
         let rdlen = get_rr_rdlen buf in
@@ -706,7 +707,8 @@ let parse_rr names base buf =
           let rdbuf = Cstruct.sub buf sizeof_rr rdlen in
           parse_rdata names (base+sizeof_rr) typ rdbuf
         in
-        match get_rr_cls buf |> int_to_rr_class with
+        let c = get_rr_cls buf in
+        match int_to_rr_class c with
           | None -> failwith "parse_rr: unknown class"
           | Some cls -> 
               ({ name; cls; ttl; rdata }, 

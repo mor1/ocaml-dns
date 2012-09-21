@@ -30,6 +30,7 @@ let contain_exc l v =
     Some (v ())
   with exn ->
     eprintf "dns %s exn: %s\n%!" l (Printexc.to_string exn); 
+    eprintf "dns %s backtrace:\n%s\n%!" l (Printexc.get_backtrace ()); 
     None 
 
 let bind_fd ~address ~port =
