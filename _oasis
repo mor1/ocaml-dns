@@ -28,8 +28,8 @@ Flag mirage
 Library server_lwt_unix
   Build$: flag(lwt)
   Install$: flag(lwt)
-  Path: lwt
-  Findlibname: server_lwt_unix
+  Path: server
+  FindlibName: server_lwt_unix
   FindlibParent: dns
   BuildDepends: lwt, lwt.unix, lwt.syntax, cstruct, cstruct.syntax, dns
   Modules: Server_lwt_unix
@@ -37,8 +37,8 @@ Library server_lwt_unix
 Library server_lwt_mirage
   Build$: flag(mirage)
   Install$: flag(mirage)
-  Path: lwt
-  Findlibname: server_lwt_mirage
+  Path: server
+  FindlibName: server_lwt_mirage
   FindlibParent: dns
   BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, mirage, mirage-net
   Modules: Server_lwt_mirage
@@ -46,8 +46,8 @@ Library server_lwt_mirage
 Library resolver_lwt_unix
   Build$: flag(lwt)
   Install$: flag(lwt)
-  Path: lwt
-  Findlibname: resolver_lwt_unix
+  Path: resolver
+  FindlibName: resolver_lwt_unix
   FindlibParent: dns
   BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, lwt, lwt.unix
   Modules: Resolver_lwt_unix
@@ -55,8 +55,8 @@ Library resolver_lwt_unix
 Library resolver_lwt_mirage
   Build$: flag(mirage)
   Install$: flag(mirage)
-  Path: lwt
-  Findlibname: resolver_lwt_mirage
+  Path: resolver
+  FindlibName: resolver_lwt_mirage
   FindlibParent: dns
   BuildDepends: lwt.syntax, cstruct, cstruct.syntax, dns, mirage, mirage-net
   Modules: Resolver_lwt_mirage
@@ -69,23 +69,23 @@ Document dns
   XOCamlbuildPath:      lib  
   XOCamlbuildLibraries: dns
 
-# Executable lwt_server
-#   Path:               lib_test
-#   MainIs:             lwt_server.ml
-#   Build$:             flag(tests)
-#   Custom:             true
-#   CompiledObject:     best
-#   Install:            false
-#   BuildDepends:       lwt, lwt.unix, re, re.str, dns, dns.server
+Executable lwt_unix_server
+  Path:               bin
+  MainIs:             lwt_unix_server.ml
+  Build$:             flag(tests)
+  Custom:             true
+  CompiledObject:     best
+  Install:            false
+  BuildDepends:       lwt, lwt.unix, re, re.str, dns, dns.server_lwt_unix
 
-# Executable time_server
-#   Path:               lib_test
-#   MainIs:             time_server.ml
-#   Build$:             flag(tests)
-#   Custom:             true
-#   CompiledObject:     best
-#   Install:            false
-#   BuildDepends:       lwt, lwt.unix, re, re.str, dns
+Executable lwt_unix_time_server
+  Path:               bin
+  MainIs:             lwt_unix_time_server.ml
+  Build$:             flag(tests)
+  Custom:             true
+  CompiledObject:     best
+  Install:            false
+  BuildDepends:       lwt, lwt.unix, re, re.str, dns, dns.server_lwt_unix
 
 # Executable odig
 #   Path:               client

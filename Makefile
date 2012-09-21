@@ -43,4 +43,6 @@ distclean: setup.data setup.bin
 	./setup.bin -distclean $(OFLAGS)
 	$(RM) setup.data setup.log setup.bin
 
-
+oasis:
+	oasis setup-clean
+	oasis setup

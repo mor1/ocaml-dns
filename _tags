@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 10786ec40c40638b5da76aba8145f368)
+# DO NOT EDIT (digest: b9485ad47b885d61bc4e66c82ceaba44)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -27,28 +27,69 @@
 "lib/zone.cmx": for-pack(Dns)
 "lib/zone_lexer.cmx": for-pack(Dns)
 "lib/zone_parser.cmx": for-pack(Dns)
-<lib/*.ml{,i}>: pkg_cstruct
-<lib/*.ml{,i}>: pkg_cstruct.syntax
 <lib/*.ml{,i}>: pkg_re
 <lib/*.ml{,i}>: pkg_re.str
+<lib/*.ml{,i}>: pkg_cstruct
+<lib/*.ml{,i}>: pkg_cstruct.syntax
 # Library server_lwt_unix
-"lwt/server_lwt_unix.cmxs": use_server_lwt_unix
+"server/server_lwt_unix.cmxs": use_server_lwt_unix
+<server/*.ml{,i}>: pkg_lwt
+<server/*.ml{,i}>: pkg_lwt.unix
 # Library server_lwt_mirage
-"lwt/server_lwt_mirage.cmxs": use_server_lwt_mirage
+"server/server_lwt_mirage.cmxs": use_server_lwt_mirage
+<server/*.ml{,i}>: use_dns
+<server/*.ml{,i}>: pkg_re
+<server/*.ml{,i}>: pkg_re.str
+<server/*.ml{,i}>: pkg_lwt.syntax
+<server/*.ml{,i}>: pkg_cstruct
+<server/*.ml{,i}>: pkg_cstruct.syntax
+<server/*.ml{,i}>: pkg_mirage
+<server/*.ml{,i}>: pkg_mirage-net
 # Library resolver_lwt_unix
-"lwt/resolver_lwt_unix.cmxs": use_resolver_lwt_unix
-<lwt/*.ml{,i}>: pkg_lwt
-<lwt/*.ml{,i}>: pkg_lwt.unix
+"resolver/resolver_lwt_unix.cmxs": use_resolver_lwt_unix
+<resolver/*.ml{,i}>: pkg_lwt
+<resolver/*.ml{,i}>: pkg_lwt.unix
 # Library resolver_lwt_mirage
-"lwt/resolver_lwt_mirage.cmxs": use_resolver_lwt_mirage
-<lwt/*.ml{,i}>: use_dns
-<lwt/*.ml{,i}>: pkg_lwt.syntax
-<lwt/*.ml{,i}>: pkg_cstruct
-<lwt/*.ml{,i}>: pkg_cstruct.syntax
-<lwt/*.ml{,i}>: pkg_mirage
-<lwt/*.ml{,i}>: pkg_mirage-net
-<lwt/*.ml{,i}>: pkg_re
-<lwt/*.ml{,i}>: pkg_re.str
+"resolver/resolver_lwt_mirage.cmxs": use_resolver_lwt_mirage
+<resolver/*.ml{,i}>: use_dns
+<resolver/*.ml{,i}>: pkg_re
+<resolver/*.ml{,i}>: pkg_re.str
+<resolver/*.ml{,i}>: pkg_lwt.syntax
+<resolver/*.ml{,i}>: pkg_cstruct
+<resolver/*.ml{,i}>: pkg_cstruct.syntax
+<resolver/*.ml{,i}>: pkg_mirage
+<resolver/*.ml{,i}>: pkg_mirage-net
+# Executable lwt_unix_server
+<bin/lwt_unix_server.{native,byte}>: use_server_lwt_unix
+<bin/lwt_unix_server.{native,byte}>: use_dns
+<bin/lwt_unix_server.{native,byte}>: pkg_lwt
+<bin/lwt_unix_server.{native,byte}>: pkg_lwt.unix
+<bin/lwt_unix_server.{native,byte}>: pkg_re
+<bin/lwt_unix_server.{native,byte}>: pkg_re.str
+<bin/lwt_unix_server.{native,byte}>: pkg_lwt.syntax
+<bin/lwt_unix_server.{native,byte}>: pkg_cstruct
+<bin/lwt_unix_server.{native,byte}>: pkg_cstruct.syntax
+<bin/lwt_unix_server.{native,byte}>: custom
+# Executable lwt_unix_time_server
+<bin/lwt_unix_time_server.{native,byte}>: use_server_lwt_unix
+<bin/lwt_unix_time_server.{native,byte}>: use_dns
+<bin/lwt_unix_time_server.{native,byte}>: pkg_lwt
+<bin/lwt_unix_time_server.{native,byte}>: pkg_lwt.unix
+<bin/lwt_unix_time_server.{native,byte}>: pkg_re
+<bin/lwt_unix_time_server.{native,byte}>: pkg_re.str
+<bin/lwt_unix_time_server.{native,byte}>: pkg_lwt.syntax
+<bin/lwt_unix_time_server.{native,byte}>: pkg_cstruct
+<bin/lwt_unix_time_server.{native,byte}>: pkg_cstruct.syntax
+<bin/*.ml{,i}>: use_server_lwt_unix
+<bin/*.ml{,i}>: use_dns
+<bin/*.ml{,i}>: pkg_lwt
+<bin/*.ml{,i}>: pkg_lwt.unix
+<bin/*.ml{,i}>: pkg_re
+<bin/*.ml{,i}>: pkg_re.str
+<bin/*.ml{,i}>: pkg_lwt.syntax
+<bin/*.ml{,i}>: pkg_cstruct
+<bin/*.ml{,i}>: pkg_cstruct.syntax
+<bin/lwt_unix_time_server.{native,byte}>: custom
 # OASIS_STOP
 true: annot
 <lib/*>: syntax_camlp4o
