@@ -32,7 +32,7 @@ clean:
 doc: setup.data setup.bin
 	./setup.bin -doc -j $(J) $(OFLAGS)
 
-install: 
+install:
 	ocamlfind remove $(NAME) $(OFLAGS)
 	./setup.bin -install
 
