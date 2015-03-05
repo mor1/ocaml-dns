@@ -315,6 +315,8 @@ type detail = {
   rcode: rcode;
 }
 
+val detail_to_string: detail -> string
+
 (** And finally, the DNS packet itself, with conversion functions. *)
 type t = {
   id          : int;
